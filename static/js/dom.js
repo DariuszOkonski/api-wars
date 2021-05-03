@@ -52,16 +52,29 @@ export const dom = {
         button.innerText = residents.length;
         button.addEventListener('click', () => {
             this.currResidents = [];
-            this.updateResidents(residents, (residents) => {
+            this.updateResidents(residents, (res) => {
                 // gonna happen after currResidents is filled
-                this.appendTableModal(residents)
+                this.appendTableModal()
             });
         });
         return button;
     },
-    appendTableModal(residents) {
-        const tableModal = this.showResidentModal(residents);
-        document.body.appendChild(tableModal);
+    appendTableModal() {
+        const modal = document.createElement('div');
+        const tableGuts = this.fillTable(residentsHeaders, this.currResidents);
+        const table = this.createTableHeaders(residentsHeaders);
+
+        modal.classList.add('residents-modal');
+        modal.addEventListener('click', () => modal.remove());
+        table.classList.add('container-sm', 'table-resident');
+
+        table.appendChild(tableGuts);
+        modal.appendChild(table);
+        document.body.appendChild(modal);
+    },
+    createResidentModal() {
+
+        return modal
     },
     createTableHeaders: function (headers) {
         const table = document.createElement('table')
@@ -103,19 +116,6 @@ export const dom = {
                 this.renderPlanets();
             });
         };
-    },
-    showResidentModal() {
-        const modal = document.createElement('div');
-        const tableGuts = this.fillTable(residentsHeaders, this.currResidents);
-        const table = this.createTableHeaders(residentsHeaders);
-
-        modal.classList.add('residents-modal');
-        modal.addEventListener('click', () => modal.remove());
-        table.classList.add('container-sm', 'table-resident');
-
-        table.appendChild(tableGuts);
-        modal.appendChild(table);
-        return modal
     },
     updateResidents(data, callback) {
         let counter = 0
