@@ -9,5 +9,10 @@ export const data_handler = {
             .then(response => response.json())
             .then(data => callback(data))
             .catch(err => console.log("ERR: ", err))
-    }
-}
+    },
+    updateResidents(url, callback) {
+        this._api_get(url, (data) => {
+            callback(data);
+        });
+    },
+};

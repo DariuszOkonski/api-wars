@@ -1,7 +1,7 @@
 import { data_handler } from "./data_handler.js";
 
 const wishedPlanetsHeaders = ['name', 'diameter', 'climate', 'terrain', 'surface_water', 'population', 'residents'];
-const wishedResidentsHeaders = ['name', 'height', 'mass', 'skin_color', 'hair_color', 'eye_color', 'birth_year', 'gender'];
+const residentsHeaders = ['name', 'height', 'mass', 'skin_color', 'hair_color', 'eye_color', 'birth_year', 'gender'];
 
 export const dom = {
     currentPlanetsObj: null,
@@ -21,35 +21,49 @@ export const dom = {
         })
     },
     renderPlanets: function () {
-        const table = this.buildTableWithHeaders(wishedPlanetsHeaders);
+        const table = this.createTableHeaders(wishedPlanetsHeaders);
 
-        table.appendChild(this.buildTableBody(wishedPlanetsHeaders, this.currentPlanetsObj.results));
+        table.appendChild(this.fillTable(wishedPlanetsHeaders, this.currentPlanetsObj.results));
 
         document.getElementById('table').innerText = '';
         document.getElementById('table').appendChild(table);
     },
-    buildTableBody: function (headers, dataObj) {
-        const tbody = document.createElement('tbody')
+    fillTable: function (headers, dataObj) {
+        const tableBody = document.createElement('tbody')
         dataObj.forEach(planet => {
-            let tr = document.createElement('tr');
-
+            let row = document.createElement('tr');
             for (let header of headers) {
-                let td = document.createElement('td')
-
-
+                let cell = document.createElement('td')
                 if (header === 'residents') {
-                    const button = this.createResidentButton(planet[header]);
-                    td.appendChild(button);
+                    const button = this.appendResidentButton(planet.residents);
+                    cell.appendChild(button);
                 } else {
-                    td.innerText = planet[header];
+                    cell.innerText = planet[header];
                 }
-                tr.appendChild(td)
+                row.appendChild(cell)
             }
-            tbody.appendChild(tr);
+            tableBody.appendChild(row);
         })
-        return tbody;
+        return tableBody;
     },
-    buildTableWithHeaders: function (headers) {
+    appendResidentButton(residents) {
+        const button = document.createElement('button');
+        button.classList.add('btn', 'btn-primary', 'btn-sm');
+        button.innerText = residents.length;
+        button.addEventListener('click', () => {
+            this.currResidents = [];
+            this.updateResidents(residents, (residents) => {
+                // gonna happen after currResidents is filled
+                this.appendTableModal(residents)
+            });
+        });
+        return button;
+    },
+    appendTableModal(residents) {
+        const tableModal = this.showResidentModal(residents);
+        document.body.appendChild(tableModal);
+    },
+    createTableHeaders: function (headers) {
         const table = document.createElement('table')
         table.classList.add('table')
 
@@ -90,38 +104,28 @@ export const dom = {
             });
         };
     },
-    createResidentButton(residentData) {
-        const button = document.createElement('button');
-        button.classList.add('btn', 'btn-primary', 'btn-sm');
-        button.innerText = residentData.length;
-        button.addEventListener('click', () => {
-            this.currResidents = [];
-            this.createObjsArrayOfUrlArray(residentData);
-
-            const modal = this.createResidentModal(residentData);
-            document.body.appendChild(modal);
-        });
-        return button;
-    },
-    createResidentModal(residentData) {
+    showResidentModal() {
         const modal = document.createElement('div');
+        const tableGuts = this.fillTable(residentsHeaders, this.currResidents);
+        const table = this.createTableHeaders(residentsHeaders);
+
         modal.classList.add('residents-modal');
-        const table = this.buildTableWithHeaders(wishedResidentsHeaders);
-        table.classList.add('container-sm', 'table-resident',);
-        modal.addEventListener('click', () => {
-            modal.remove();
-        });
+        modal.addEventListener('click', () => modal.remove());
+        table.classList.add('container-sm', 'table-resident');
 
-        console.log(this.currResidents, 'residents!!!!!',);
-        table.appendChild(this.buildTableBody(wishedResidentsHeaders, this.currResidents));
-
+        table.appendChild(tableGuts);
         modal.appendChild(table);
         return modal
     },
-    createObjsArrayOfUrlArray(urlArray) {
-        for (let url of urlArray) {
-            data_handler._api_get(url, (response) => {
-                this.currResidents.push(response);
+    updateResidents(data, callback) {
+        let counter = 0
+        for (let url of data) {
+            data_handler.updateResidents(url, function (response) {
+                counter++;
+                dom.currResidents.push(response);
+                if (counter === data.length) {
+                    callback(data);
+                }
             });
         };
     },
