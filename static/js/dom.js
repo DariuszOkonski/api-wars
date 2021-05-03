@@ -1,5 +1,5 @@
 import { data_handler } from "./data_handler.js";
-const wishedPlanetsHeaders = ['name', 'diameter', 'climate', 'terrain', 'surface_water', 'population']
+const wishedPlanetsHeaders = ['name', 'diameter', 'climate', 'terrain', 'surface_water', 'population', 'residents']
 
 export const dom = {
     currentPlanetsObj: null,
@@ -32,7 +32,13 @@ export const dom = {
 
             for (let header of headers) {
                 let td = document.createElement('td')
-                td.innerText = planet[header];
+
+
+                if (header === 'residents') {
+                    td.innerText = planet[header].length;
+                } else {
+                    td.innerText = planet[header];
+                }
                 tr.appendChild(td)
             }
             tbody.appendChild(tr);
