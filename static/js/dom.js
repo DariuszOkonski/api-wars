@@ -1,5 +1,7 @@
 import { data_handler } from "./data_handler.js";
-const wishedPlanetsHeaders = ['name', 'diameter', 'climate', 'terrain', 'surface_water', 'population', 'residents']
+
+const wishedPlanetsHeaders = ['name', 'diameter', 'climate', 'terrain', 'surface_water', 'population', 'residents'];
+const wishedResidentsHeaders = ['name', 'height', 'mass', 'skin_color', 'hair_color', 'eye_color', 'birth_year', 'gender'];
 
 export const dom = {
     currentPlanetsObj: null,
@@ -7,6 +9,7 @@ export const dom = {
         next: document.querySelector('#next'),
         previous: document.querySelector('#previous'),
     },
+    currResidents: [],
     init: function () {
         this.getPlanets();
         this.setNavigationButtons();
@@ -35,7 +38,8 @@ export const dom = {
 
 
                 if (header === 'residents') {
-                    td.innerText = planet[header].length;
+                    const button = this.createResidentButton(planet[header]);
+                    td.appendChild(button);
                 } else {
                     td.innerText = planet[header];
                 }
@@ -83,6 +87,41 @@ export const dom = {
             data_handler._api_get(this.currentPlanetsObj.previous, (response) => {
                 this.currentPlanetsObj = response;
                 this.renderPlanets();
+            });
+        };
+    },
+    createResidentButton(residentData) {
+        const button = document.createElement('button');
+        button.classList.add('btn', 'btn-primary', 'btn-sm');
+        button.innerText = residentData.length;
+        button.addEventListener('click', () => {
+            this.currResidents = [];
+            this.createObjsArrayOfUrlArray(residentData);
+
+            const modal = this.createResidentModal(residentData);
+            document.body.appendChild(modal);
+        });
+        return button;
+    },
+    createResidentModal(residentData) {
+        const modal = document.createElement('div');
+        modal.classList.add('residents-modal');
+        const table = this.buildTableWithHeaders(wishedResidentsHeaders);
+        table.classList.add('container-sm', 'table-resident',);
+        modal.addEventListener('click', () => {
+            modal.remove();
+        });
+
+        console.log(this.currResidents, 'residents!!!!!',);
+        table.appendChild(this.buildTableBody(wishedResidentsHeaders, this.currResidents));
+
+        modal.appendChild(table);
+        return modal
+    },
+    createObjsArrayOfUrlArray(urlArray) {
+        for (let url of urlArray) {
+            data_handler._api_get(url, (response) => {
+                this.currResidents.push(response);
             });
         };
     },
