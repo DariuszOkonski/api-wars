@@ -14,6 +14,7 @@ export const dom = {
     init: function () {
         this.getPlanets();
         this.setNavigationButtons();
+        this.createSigningSection();
     },
     getPlanets: function () {
         data_handler._api_get('https://swapi.dev/api/planets/', (response) => {
@@ -35,7 +36,7 @@ export const dom = {
             let row = document.createElement('tr');
             for (let header of headers) {
                 let cell = document.createElement('td')
-                if (header === 'residents') {
+                if (header === 'residents' && planet[header].length != 0) {
                     const button = this.appendResidentButton(planet.residents);
                     cell.appendChild(button);
                 } else {
@@ -49,7 +50,7 @@ export const dom = {
     },
     appendResidentButton(residents) {
         const button = document.createElement('button');
-        button.classList.add('btn', 'btn-primary', 'btn-sm');
+        button.classList.add('btn', 'btn-primary', 'btn-sm', 'resident');
         button.innerText = residents.length;
         button.addEventListener('click', () => {
             button.disabled = true;
@@ -137,4 +138,24 @@ export const dom = {
             });
         };
     },
+    createSigningSection() {
+        const signingSection = document.getElementById('sign-up-section');
+
+        const signInButton = document.createElement('a');
+        signInButton.innerText = 'Sign in';
+        signInButton.className = "btn btn-success sign";
+
+        signInButton.href = "/login"
+
+
+        const signUpButton = document.createElement('a');
+        signUpButton.className = "btn btn-light sign";
+        signUpButton.innerText = 'Sign up';
+
+        signUpButton.href = "/register"
+
+
+        signingSection.appendChild(signUpButton);
+        signingSection.appendChild(signInButton);
+    }
 }

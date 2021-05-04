@@ -21,3 +21,28 @@ h1 {
 .button-container {
     margin: 1rem 0;
 }
+
+#sign-up-section {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px;
+}
+
+.sign {
+    margin: 5px;
+}
+
+.resident {
+    min-width: 40px;
+}
+.sign-form {
+    max-width: 350px;
+}
+
+.form-container {
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

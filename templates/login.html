@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+    <div class="form-container">
+
+        <h2> Login </h2>
+        <form action="{{ url_for('post_login') }}" method="POST">
+          <div class="mb-3">
+            <label for="inputLogin" class="form-label">Email address</label>
+            <input name="login" type="text" class="form-control" id="inputLogin" aria-describedby="emailHelp">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Password:
+                <input type="password" class="form-control" id="inputPassword">
+            </label>
+
+          </div>
+          <div class="mb-3 form-check">
+            <input name="password" type="checkbox" class="form-check-input" id="inputCheck">
+            <label class="form-check-label" for="inputCheck">Check</label>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+{% endblock %}
