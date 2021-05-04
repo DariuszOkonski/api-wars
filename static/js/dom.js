@@ -8,6 +8,7 @@ export const dom = {
     buttons: {
         next: document.querySelector('#next'),
         previous: document.querySelector('#previous'),
+        disabledButton: null,
     },
     currResidents: [],
     init: function () {
@@ -51,9 +52,11 @@ export const dom = {
         button.classList.add('btn', 'btn-primary', 'btn-sm');
         button.innerText = residents.length;
         button.addEventListener('click', () => {
+            button.disabled = true;
+            this.buttons.disabledButton = button;
+
             this.currResidents = [];
             this.updateResidents(residents, (res) => {
-                // gonna happen after currResidents is filled
                 this.appendTableModal()
             });
         });
@@ -65,7 +68,12 @@ export const dom = {
         const table = this.createTableHeaders(residentsHeaders);
 
         modal.classList.add('residents-modal');
-        modal.addEventListener('click', () => modal.remove());
+        modal.addEventListener('click', () => {
+            // this.buttons.disabledButton.removeAttribute('disabled');
+            this.buttons.disabledButton.disabled = false;
+            this.buttons.disabledButton = null;
+            modal.remove()
+        });
         table.classList.add('container-sm', 'table-resident');
 
         table.appendChild(tableGuts);
