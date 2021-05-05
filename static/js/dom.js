@@ -97,7 +97,6 @@ export const dom = {
                 .then((values) => {
                     console.log(values)
                     this.createResidentModal(values)
-
                 })
         });
         return button;
