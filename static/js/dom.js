@@ -9,7 +9,7 @@ export const dom = {
         next: document.querySelector('#next'),
         previous: document.querySelector('#previous'),
     },
-    currResidents: [],
+    currResidents: new Array(),
     init: function () {
         this.getPlanets();
         this.setNavigationButtons();
@@ -35,8 +35,6 @@ export const dom = {
 
             for (let header of headers) {
                 let td = document.createElement('td')
-
-
                 if (header === 'residents') {
                     const button = this.createResidentButton(planet[header]);
                     td.appendChild(button);
@@ -90,39 +88,51 @@ export const dom = {
             });
         };
     },
-    createResidentButton(residentData) {
+    createResidentButton: function (residentUrls) {
         const button = document.createElement('button');
         button.classList.add('btn', 'btn-primary', 'btn-sm');
-        button.innerText = residentData.length;
+        button.innerText = residentUrls.length;
         button.addEventListener('click', () => {
-            this.currResidents = [];
-            this.createObjsArrayOfUrlArray(residentData);
+            this.getResidents(residentUrls)
+                .then((values) => {
+                    console.log(values)
+                    this.createResidentModal(values)
 
-            const modal = this.createResidentModal(residentData);
-            document.body.appendChild(modal);
+                })
         });
         return button;
     },
-    createResidentModal(residentData) {
+    createResidentModal: function (residentData) {
         const modal = document.createElement('div');
-        modal.classList.add('residents-modal');
         const table = this.buildTableWithHeaders(wishedResidentsHeaders);
+        const tbody = this.buildTableBody(wishedResidentsHeaders, residentData)
+
+        modal.classList.add('residents-modal');
         table.classList.add('container-sm', 'table-resident',);
+
         modal.addEventListener('click', () => {
             modal.remove();
+            this.currResidents = [];
         });
 
-        console.log(this.currResidents, 'residents!!!!!',);
-        table.appendChild(this.buildTableBody(wishedResidentsHeaders, this.currResidents));
-
+        table.appendChild(tbody);
         modal.appendChild(table);
-        return modal
+
+        document.body.appendChild(modal)
     },
-    createObjsArrayOfUrlArray(urlArray) {
-        for (let url of urlArray) {
-            data_handler._api_get(url, (response) => {
-                this.currResidents.push(response);
-            });
-        };
+    getResidents: function (urlArray) {
+        const array = []
+
+        urlArray.forEach((url) => {
+            array.push(this.getResident(url))
+        })
+
+        return Promise.all(array).then((values) => values)
+    },
+    getResident: function (url) {
+        return new Promise(resolve => {
+            data_handler._api_get(url, (response) =>
+                resolve(response));
+        })
     },
 }
